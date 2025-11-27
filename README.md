@@ -1,2 +1,2 @@
 # PMDS-Security
-This is my Final Year Project About the extension which work as filter or block to phishing mail.
+This is my Final Year Project About the extension which work as filter to block phishing mails.
