@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Mail Detection System - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="chart.min.js"></script>
+    <script>
+        // Verify Chart.js is loaded
+        window.addEventListener('load', function() {
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js failed to load');
+                document.getElementById('status-chart').innerHTML = '<div class="error-message">Failed to load chart library. Please refresh the page.</div>';
+            }
+        });
+    </script>
+    <style>
+        .notification-center {
+            position: relative;
+            display: inline-block;
+            margin-left: 16px;
+        }
+        .notification-bell {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            font-size: 22px;
+            padding: 0 8px;
+        }
+        .bell-icon {
+            font-size: 22px;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #dc3545;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 12px;
+            padding: 2px 6px;
+            min-width: 18px;
+            text-align: center;
+            display: inline-block;
+        }
+        .notification-dropdown {
+            position: absolute;
+            right: 0;
+            top: 36px;
+            width: 320px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            z-index: 1001;
+            display: none;
+        }
+        .notification-dropdown .dropdown-header {
+            font-weight: bold;
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        .notification-list {
+            max-height: 220px;
+            overflow-y: auto;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .notification-list li {
+            padding: 10px 16px;
+            border-bottom: 1px solid #f1f1f1;
+            font-size: 14px;
+        }
+        .notification-list li:last-child {
+            border-bottom: none;
+        }
+        .notification-list .no-notifications {
+            color: #888;
+            text-align: center;
+            padding: 24px 0;
+        }
+        .dropdown-footer {
+            padding: 8px 16px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+            text-align: right;
+        }
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 0;
+        }
+        .notification-dropdown:not(.hidden) {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Phishing Mail Detection System</h1>
+                <span class="subtitle">Dashboard</span>
+            </div>
+            <div class="header-controls">
+                <div class="toggle-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="detection-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Enable Detection</span>
+                </div>
+                <button id="refresh-btn" class="control-button">
+                    <span class="btn-icon">&#8635;</span>
+                    <span class="btn-text">Refresh Data</span>
+                </button>
+                <div class="notification-center">
+                    <button id="notification-bell" class="notification-bell">
+                        <span class="bell-icon">&#128276;</span>
+                        <span id="notification-badge" class="notification-badge" style="display:none;">0</span>
+                    </button>
+                    <div id="notification-dropdown" class="notification-dropdown hidden">
+                        <div class="dropdown-header">Notifications</div>
+                        <ul id="notification-list" class="notification-list">
+                            <li class="no-notifications">No notifications</li>
+                        </ul>
+                        <div class="dropdown-footer">
+                            <button id="clear-notifications" class="clear-btn">Clear All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard-main">
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="#overview" class="active" data-section="overview">Overview</a></li>
+                        <li><a href="#scan-history" data-section="scan-history">Scan History</a></li>
+                        <li><a href="#blacklist" data-section="blacklist">Blacklist</a></li>
+                        <li><a href="#whitelist" data-section="whitelist">Whitelist</a></li>
+                        <li><a href="#settings" data-section="settings">Settings</a></li>
+                    </ul>
+                </nav>
+            </aside>
+            
+            <main class="content">
+                <section id="overview" class="dashboard-section active">
+                    <h2>Overview</h2>
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="stat-title">Total Scans</div>
+                            <div class="stat-value" id="total-scans">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Phishing Detected</div>
+                            <div class="stat-value" id="phishing-scans">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Suspicious</div>
+                            <div class="stat-value" id="suspicious-scans">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Safe</div>
+                            <div class="stat-value" id="safe-scans">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-box">
+                            <h3>Detection Distribution</h3>
+                            <canvas id="status-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div class="activity-list" id="recent-activities">
+                            <div class="no-data">No recent activity</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="scan-history" class="dashboard-section">
+                    <h2>Scan History</h2>
+                    <div class="search-filter">
+                        <input type="text" id="scan-search" placeholder="Search URLs..." class="search-input">
+                        <select id="status-filter" class="filter-select">
+                            <option value="all">All Statuses</option>
+                            <option value="safe">Safe</option>
+                            <option value="suspicious">Suspicious</option>
+                            <option value="phishing">Phishing</option>
+                        </select>
+                        <button id="generate-report-btn" class="control-button">
+                            <span class="btn-icon">📊</span>
+                            <span class="btn-text">Generate Report</span>
+                        </button>
+                    </div>
+                    
+                    <div class="scan-history-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>URL</th>
+                                    <th>Domain</th>
+                                    <th>Status</th>
+                                    <th>Detection Ratio</th>
+                                    <th>Scan Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scan-history-tbody">
+                                <!-- Scan history items will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <section id="blacklist" class="dashboard-section">
+                    <h2>Blacklist Management</h2>
+                    <div class="list-management">
+                        <div class="add-entry">
+                            <h3>Add to Blacklist</h3>
+                            <form id="blacklist-form">
+                                <div class="form-group">
+                                    <label for="blacklist-pattern">Domain or URL:</label>
+                                    <input type="text" id="blacklist-pattern" placeholder="example.com or https://example.com/path" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="blacklist-type">Type:</label>
+                                    <select id="blacklist-type">
+                                        <option value="domain">Domain</option>
+                                        <option value="url">URL</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="blacklist-notes">Notes (optional):</label>
+                                    <textarea id="blacklist-notes" placeholder="Why is this being blacklisted?"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="submit-btn">Add to Blacklist</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="list-entries">
+                            <h3>Current Blacklist</h3>
+                            <div class="list-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Pattern</th>
+                                            <th>Type</th>
+                                            <th>Date Added</th>
+                                            <th>Notes</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="blacklist-tbody">
+                                        <!-- Blacklist items will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="whitelist" class="dashboard-section">
+                    <h2>Whitelist Management</h2>
+                    <div class="list-management">
+                        <div class="add-entry">
+                            <h3>Add to Whitelist</h3>
+                            <form id="whitelist-form">
+                                <div class="form-group">
+                                    <label for="whitelist-pattern">Domain or URL:</label>
+                                    <input type="text" id="whitelist-pattern" placeholder="example.com or https://example.com/path" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="whitelist-type">Type:</label>
+                                    <select id="whitelist-type">
+                                        <option value="domain">Domain</option>
+                                        <option value="url">URL</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="whitelist-notes">Notes (optional):</label>
+                                    <textarea id="whitelist-notes" placeholder="Why is this being whitelisted?"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="submit-btn">Add to Whitelist</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="list-entries">
+                            <h3>Current Whitelist</h3>
+                            <div class="list-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Pattern</th>
+                                            <th>Type</th>
+                                            <th>Date Added</th>
+                                            <th>Notes</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="whitelist-tbody">
+                                        <!-- Whitelist items will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="settings" class="dashboard-section">
+                    <h2>Settings</h2>
+                    
+                    <div class="settings-container">
+                        <div class="settings-section">
+                            <h3>VirusTotal API Keys</h3>
+                            <p class="settings-description">
+                                Add your VirusTotal API keys to enable URL scanning functionality. 
+                                You can get a free API key by <a href="https://www.virustotal.com/gui/join-us" target="_blank">signing up</a> for a VirusTotal account.
+                            </p>
+                            
+                            <div class="api-key-management">
+                                <div class="add-api-key">
+                                    <form id="api-key-form">
+                                        <div class="form-group">
+                                            <label for="api-key-input">Add New API Key:</label>
+                                            <input type="text" id="api-key-input" placeholder="Enter your VirusTotal API key" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="skip-validation-checkbox">
+                                                <span>Skip validation (for testing only)</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="submit" class="submit-btn">Add API Key</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <div class="current-api-keys">
+                                    <h4>Current API Keys</h4>
+                                    <div class="api-keys-container" id="api-keys-list">
+                                        <div class="no-data">No API keys added yet</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="api-key-validation">
+                                <div id="validation-status" class="validation-message hidden"></div>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h3>General Settings</h3>
+                            <div class="setting-item">
+                                <div class="setting-label">Enable automatic URL scanning</div>
+                                <div class="setting-control">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="auto-scan-toggle" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-label">Show notifications for suspicious URLs</div>
+                                <div class="setting-control">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="notification-toggle" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+        
+        <footer class="dashboard-footer">
+            <div class="footer-content">
+                <p>&copy; 2023 Phishing Mail Detection System</p>
+            </div>
+        </footer>
+    </div>
+    
+    <script src="chart.min.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

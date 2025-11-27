@@ -1,0 +1,247 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    width: 320px;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    width: 100%;
+    padding: 16px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+h1 {
+    font-size: 18px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+/* Status Section Styles */
+.status-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+}
+
+.status-label {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.status-value {
+    font-weight: bold;
+}
+
+.status-value.enabled {
+    color: #28a745;
+}
+
+.status-value.disabled {
+    color: #dc3545;
+}
+
+/* Controls Section Styles */
+.controls-section {
+    margin-bottom: 16px;
+}
+
+.toggle-control {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #2196F3;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.toggle-label {
+    font-size: 14px;
+}
+
+.button-controls {
+    display: flex;
+    justify-content: space-between;
+}
+
+.control-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    width: 48%;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.control-button:hover {
+    background-color: #e9ecef;
+}
+
+.btn-icon {
+    margin-right: 4px;
+}
+
+/* Summary Section Styles */
+.summary-section {
+    margin-bottom: 16px;
+}
+
+h2 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.results-container {
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.no-results {
+    text-align: center;
+    color: #6c757d;
+    padding: 8px 0;
+}
+
+.scan-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.scan-item:last-child {
+    border-bottom: none;
+}
+
+.scan-url {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+
+.scan-status {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+}
+
+.scan-status.safe {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.scan-status.suspicious {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.scan-status.phishing {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+}
+
+.dashboard-button {
+    width: 100%;
+    padding: 8px 16px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dashboard-button:hover {
+    background-color: #0d8bf2;
+}

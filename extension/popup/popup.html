@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Mail Detection System</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Phishing Mail Detection</h1>
+        </header>
+        
+        <div class="status-section">
+            <div class="status-indicator">
+                <span class="status-label">Status:</span>
+                <span id="detection-status" class="status-value">Enabled</span>
+            </div>
+        </div>
+        
+        <div class="controls-section">
+            <div class="toggle-control">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="detection-toggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Enable Detection</span>
+            </div>
+            
+            <div class="button-controls">
+                <button id="manual-scan-btn" class="control-button">
+                    <span class="btn-icon">&#128269;</span>
+                    <span class="btn-text">Manual Scan</span>
+                </button>
+                
+                <button id="refresh-btn" class="control-button">
+                    <span class="btn-icon">&#8635;</span>
+                    <span class="btn-text">Refresh</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="summary-section">
+            <h2>Last Scan Results</h2>
+            <div id="scan-results" class="results-container">
+                <p class="no-results">No recent scans</p>
+            </div>
+        </div>
+        
+        <footer>
+            <button id="dashboard-btn" class="dashboard-button">Open Dashboard</button>
+        </footer>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
